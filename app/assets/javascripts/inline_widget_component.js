@@ -5,7 +5,7 @@ window.WidgetFactory.addMessageHandler = function (component) {
   window.addEventListener('message', e => {
     if (e.data.type === 'UPDATE_PREVIEW')
       updatePreview(component, e.data.payload);
-    if (e.data.type === 'SET_LOADING')
+    if (e.data.type === 'SET_LOADING' && e.data.payload.component === component)
       window.WidgetFactory.setLoading(component, e.data.payload.isLoading);
   });
 };

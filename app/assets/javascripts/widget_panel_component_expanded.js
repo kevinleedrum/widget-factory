@@ -88,14 +88,18 @@ removeButtons.forEach(button => {
 });
 
 function logEvent(eventType, eventData, component = 'widget_panel') {
-  _fetch(`/api/events/?session_id=${window.WidgetFactory.SESSION_ID}`, {
-    method: 'POST',
-    body: JSON.stringify({
-      event_type: eventType,
-      event_data: eventData,
-      component,
-    }),
-  });
+  _fetch(
+    `/api/events/?session_id=${window.WidgetFactory.SESSION_ID}`,
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        event_type: eventType,
+        event_data: eventData,
+        component,
+      }),
+    },
+    true
+  );
 }
 
 function restoreUserWidget(widgetId, component) {
@@ -116,7 +120,7 @@ function destroyUserWidget(widgetId, component) {
     }
   );
 }
-async function _fetch(url, options) {
+async function _fetch(url, options, silent = false) {
   options = { ...options, headers: { 'Content-Type': 'application/json' } };
   const promise = fetch(url, options);
   activeRequests.push(promise);
@@ -124,7 +128,9 @@ async function _fetch(url, options) {
   activeRequests = activeRequests.filter(p => p !== promise);
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
-  } else {
+    return;
+  }
+  if (!silent) {
     window.parent.postMessage(
       {
         type: 'SET_LOADING',
