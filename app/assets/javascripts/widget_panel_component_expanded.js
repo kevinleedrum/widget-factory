@@ -8,20 +8,14 @@ const sendCloseMessage = async () => {
   window.parent.postMessage({ type: 'CLOSE_EXPANDED', payload: {} }, '*');
 };
 const modal = root.querySelector('mx-modal');
-const observer = new MutationObserver(mutations => {
-  requestAnimationFrame(() => {
-    modal.isOpen = true;
-    window.parent.postMessage(
-      {
-        type: 'SET_LOADING',
-        payload: { component: 'widget_panel', isLoading: false },
-      },
-      '*'
-    );
-  });
-  observer.disconnect();
-});
-observer.observe(root, { subtree: true, childList: true });
+modal.isOpen = true;
+window.parent.postMessage(
+  {
+    type: 'SET_LOADING',
+    payload: { component: 'widget_panel', isLoading: false },
+  },
+  '*'
+);
 modal.addEventListener('mxClose', sendCloseMessage);
 /* The close-on-escape behavior provided by mx-modal does not work in an iframe. */
 document.addEventListener('keydown', e => {
