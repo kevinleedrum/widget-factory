@@ -7,23 +7,17 @@ window.WidgetFactory.setUpModal = function (component) {
   addCloseHandlers();
 };
 
-/** Open the modal when the mx-modal element is ready */
+/** Open the modal and toggle parent loading spinner */
 function openModalWhenReady(component) {
   const modal = document.querySelector('mx-modal');
-  const observer = new MutationObserver(() => {
-    requestAnimationFrame(() => {
-      modal.isOpen = true;
-      window.parent.postMessage(
-        {
-          type: 'SET_LOADING',
-          payload: { component, isLoading: false },
-        },
-        '*'
-      );
-    });
-    observer.disconnect();
-  });
-  observer.observe(modal, { subtree: true, childList: true });
+  modal.isOpen = true;
+  window.parent.postMessage(
+    {
+      type: 'SET_LOADING',
+      payload: { component, isLoading: false },
+    },
+    '*'
+  );
 }
 
 /** Log an event when the logo is clicked */
