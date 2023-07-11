@@ -22,6 +22,8 @@ gem "actionpack-action_caching"
 gem "jwt"
 
 gem "ranked-model"
+gem "ddtrace"
+gem "dogstatsd-ruby", require: "datadog/statsd"
 
 gem "aws-sdk-s3", require: false
 

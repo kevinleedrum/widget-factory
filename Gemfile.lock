@@ -151,9 +151,16 @@ GEM
       rexml
     crass (1.0.6)
     dalli (3.2.3)
+    ddtrace (1.12.1)
+      debase-ruby_core_source (= 3.2.1)
+      libdatadog (~> 2.0.0.1.0)
+      libddwaf (~> 1.9.0.0.0)
+      msgpack
+    debase-ruby_core_source (3.2.1)
     debug (1.6.3)
       irb (>= 1.3.6)
       reline (>= 0.3.1)
+    dogstatsd-ruby (5.5.0)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
     erb_lint (0.3.1)
@@ -164,6 +171,7 @@ GEM
       rubocop
       smart_properties
     erubi (1.11.0)
+    ffi (1.15.5)
     globalid (1.0.0)
       activesupport (>= 5.0)
     hashdiff (1.0.1)
@@ -188,6 +196,11 @@ GEM
     knapsack (4.0.0)
       rake
     lefthook (1.2.2)
+    libdatadog (2.0.0.1.0)
+    libddwaf (1.9.0.0.1)
+      ffi (~> 1.0)
+    libddwaf (1.9.0.0.1-x86_64-darwin)
+      ffi (~> 1.0)
     loofah (2.19.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -374,7 +387,9 @@ DEPENDENCIES
   bootsnap
   capybara
   dalli (~> 3.2.0)
+  ddtrace
   debug
+  dogstatsd-ruby
   erb_lint
   importmap-rails
   jbuilder
