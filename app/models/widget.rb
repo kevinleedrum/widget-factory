@@ -24,7 +24,8 @@ class Widget < ApplicationRecord
   end
 
   def view_component
-    Object.const_get("#{component.camelize}::#{component.camelize}Component")
+    c = component.start_with?("external") ? "external_widget" : component
+    Object.const_get("#{c.camelize}::#{c.camelize}Component")
   rescue NameError
     nil
   end

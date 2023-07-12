@@ -163,6 +163,23 @@ To add a default logo for a new widget, place the file in a subdirectory of `/as
 Widget.find_by(component: "todo_list").logo.attach(io: File.open(Rails.root.join("app/assets/images/todo_list/logo.png")), filename: "logo.png")
 ```
 
+## External Widgets
+
+External widgets are hosted by a third party. The `external_widget` component simply renders the `Widget.external_url` in an iframe.
+
+A widget in the `widgets` table is considered "external" if:
+
+- the `external_url` column is populated, _and_
+- the `component` column value begins with `external` (e.g. `external_1`). TODO: Once these are created via the developer portal, we will need to come up with a convention and logic for generating unique component names.
+
+The external URL may make use of the following variables:
+
+- `{FULL_NAME}`: The current user's full name
+- `{MLS_NUMBER}`: The current user's MLS number
+- `{NRDS_NUMBER}`: The current user's NRDS number
+
+These variables will be replaced with the user's information when the widget is rendered. For example, if the `external_url` is `https://example.com?name={FULL_NAME}`, and the user's full name is "John Doe", the iframe will render `https://example.com?name=John%20Doe`.
+
 ## API Endpoints
 
 As [mentioned previously](#authentication), all API requests should provide a `session_id` query parameter for authentication purposes. This parameter is not required for the `/api/jwt` endpoint.
