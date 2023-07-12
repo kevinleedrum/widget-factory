@@ -16,18 +16,21 @@
   </div>
 
   <% wrap_logo_with_link = !@library_mode && @widget.logo_link_url.present? %>
-  <footer class="flex items-center justify-between min-h-48 bg-white border-t px-16">
-    <% if wrap_logo_with_link %>
-      <a href="<%= @widget.logo_link_url %>" target="_blank">
-    <% end %>
-    <img
-      id="logo"
-      src="<%= @widget.logo_url %>"
-      alt="<%= @widget.partner %>"
-      style="max-height: 1.875rem;"
-    />
-    <% if wrap_logo_with_link %>
-      </a>
+  <% justify_class = @widget.logo_url.present? ? "justify-between" : "justify-end" %>
+  <footer class="flex items-center <%= justify_class %> min-h-48 bg-white border-t px-16">
+    <% if @widget.logo_url.present? %>
+      <% if wrap_logo_with_link %>
+        <a href="<%= @widget.logo_link_url %>" target="_blank">
+      <% end %>
+      <img
+        id="logo"
+        src="<%= @widget.logo_url %>"
+        alt="<%= @widget.partner %>"
+        style="max-height: 1.875rem;"
+      />
+      <% if wrap_logo_with_link %>
+        </a>
+      <% end %>
     <% end %>
     <div class="actions flex items-center space-x-8">
       <% unless @library_mode %>
