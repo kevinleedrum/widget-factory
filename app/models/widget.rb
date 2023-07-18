@@ -65,7 +65,7 @@ class Widget < ApplicationRecord
   end
 
   def set_external_component
-    if component.blank? && external_url.present?
+    if component.blank?
       update_column(:component, "external_#{id}")
     end
   end

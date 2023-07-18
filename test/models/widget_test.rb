@@ -74,8 +74,8 @@ class WidgetTest < ActiveSupport::TestCase
     assert_not_nil widget.submitted_at
   end
 
-  test "component should be set to external_{id} after create when external_url is present" do
-    widget = Widget.create(name: "My Widget", external_url: "https://www.example.com")
+  test "component should be set to external_{id} if not otherwise provided after create" do
+    widget = Widget.create(name: "My Widget")
     assert_equal "external_#{widget.id}", widget.component
   end
 end
