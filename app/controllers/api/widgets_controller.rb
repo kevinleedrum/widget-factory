@@ -13,6 +13,19 @@ class Api::WidgetsController < ApplicationController
     render json: @widget
   end
 
+  # POST /api/widgets
+  def create
+    @widget = Widget.new(widget_params)
+    if params[:widget][:logo_base64].present?
+      @widget.logo = decode_logo
+    end
+    if @widget.save
+      render json: @widget, status: :created
+    else
+      render json: @widget.errors, status: :unprocessable_entity
+    end
+  end
+
   # PATCH/PUT /api/widgets/1
   def update
     @widget = Widget.find(params[:id])
@@ -41,6 +54,6 @@ class Api::WidgetsController < ApplicationController
   end
 
   def widget_params
-    params.require(:widget).permit(:name, :description, :status, :activation_date, :remove_logo, :updated_by)
+    params.require(:widget).permit(:name, :description, :status, :activation_date, :remove_logo, :updated_by, :partner, :logo_link_url, :external_url, :external_preview_url, :external_expanded_url, :submitted_by_uuid)
   end
 end

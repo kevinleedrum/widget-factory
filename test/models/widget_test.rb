@@ -62,25 +62,20 @@ class WidgetTest < ActiveSupport::TestCase
     assert_equal "/rails/active_storage/blobs/redirect/#{widget.logo.blob.signed_id}/#{widget.logo.blob.filename}", widget.logo_url
   end
 
-  test "restore! should set status to draft and save the record" do
-    widget = Widget.new(name: "Test Widget", status: "ready")
-    widget.restore!
-    assert_equal "draft", widget.status
-    assert widget.persisted?
+  test "submitted_at should be set when status is submitted on create" do
+    widget = Widget.create(name: "My Widget", status: "submitted")
+    assert_not_nil widget.submitted_at
   end
 
-  test "activate! should set status to ready and save the record" do
-    widget = Widget.new(name: "Test Widget", status: "draft")
-    widget.activate!
-    assert_equal "ready", widget.status
-    assert widget.persisted?
+  test "submitted_at should be set when status is changed to submitted" do
+    widget = Widget.create(name: "My Widget", status: "unsubmitted")
+    assert_nil widget.submitted_at
+    widget.update(status: "submitted")
+    assert_not_nil widget.submitted_at
   end
 
-  test "deactivate! should set status to deactivated and activation date to nil, and save the record" do
-    widget = Widget.new(name: "Test Widget", status: "ready", activation_date: Time.zone.now)
-    widget.deactivate!
-    assert_equal "deactivated", widget.status
-    assert_nil widget.activation_date
-    assert widget.persisted?
+  test "component should be set to external_{id} if not otherwise provided after create" do
+    widget = Widget.create(name: "My Widget")
+    assert_equal "external_#{widget.id}", widget.component
   end
 end
