@@ -1,8 +1,19 @@
 class Widget < ApplicationRecord
-  enum status: {ready: "ready", draft: "draft", deactivated: "deactivated"}
+  enum status: {
+    unsubmitted: "unsubmitted", # draft external widget
+    rejected: "rejected",
+    submitted: "submitted",
+    review: "review", # admin has opened the widget for review
+    draft: "draft", # approved, but not yet activated by admin
+    ready: "ready", # activated (or will be activated if activation_date is in the future)
+    deactivated: "deactivated"
+  }
 
   has_one_attached :logo
   attribute :remove_logo, :boolean
+  before_create :set_submitted_at, if: -> { status == "submitted" }
+  before_update :set_submitted_at, if: -> { status_changed?(to: "submitted") }
+  after_create :set_external_component
   after_save :purge_logo, if: :remove_logo
 
   has_many :user_widgets, dependent: :destroy
@@ -35,22 +46,6 @@ class Widget < ApplicationRecord
     Rails.application.routes.url_helpers.rails_representation_url(logo, only_path: true)
   end
 
-  def restore!
-    self.status = Widget.statuses[:draft]
-    save
-  end
-
-  def activate!
-    self.status = Widget.statuses[:ready]
-    save
-  end
-
-  def deactivate!
-    self.status = Widget.statuses[:deactivated]
-    self.activation_date = nil
-    save
-  end
-
   def self.log_event(component, event_type, event_data = {}, user_uuid, company_uuid, board_uuid, office_uuid)
     EventLoggerJob.perform_async(
       event_type,
@@ -64,6 +59,16 @@ class Widget < ApplicationRecord
   end
 
   private
+
+  def set_submitted_at
+    self.submitted_at = Time.zone.now
+  end
+
+  def set_external_component
+    if component.blank? && external_url.present?
+      update_column(:component, "external_#{id}")
+    end
+  end
 
   def purge_logo
     logo.purge_later
