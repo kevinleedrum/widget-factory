@@ -26,6 +26,6 @@ three:
   name: Widget Three
   description: MyString
   logo_link_url: MyString
-  status: draft
+  status: submitted
   activation_date: 2023-01-23 09:04:27
   updated_by: MyString

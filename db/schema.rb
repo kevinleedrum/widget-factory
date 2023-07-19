@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_18_180237) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_19_163802) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -62,6 +62,20 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_18_180237) do
     t.index ["widget_id"], name: "index_user_widgets_on_widget_id"
   end
 
+  create_table "widget_submission_logs", force: :cascade do |t|
+    t.bigint "widget_id", null: false
+    t.string "status"
+    t.text "notes"
+    t.string "updated_by"
+    t.string "logo_link_url"
+    t.string "external_url"
+    t.string "external_preview_url"
+    t.string "external_expanded_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["widget_id"], name: "index_widget_submission_logs_on_widget_id"
+  end
+
   create_table "widgets", force: :cascade do |t|
     t.string "component"
     t.string "partner"
@@ -78,10 +92,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_18_180237) do
     t.string "external_expanded_url"
     t.datetime "submitted_at"
     t.string "submitted_by_uuid"
+    t.text "submission_notes"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "user_settings", "widgets"
   add_foreign_key "user_widgets", "widgets"
+  add_foreign_key "widget_submission_logs", "widgets"
 end
