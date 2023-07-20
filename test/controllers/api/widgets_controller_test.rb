@@ -14,6 +14,7 @@ class Api::WidgetsControllerTest < ActionController::TestCase
     assert_response :success
     response_body = JSON.parse(response.body)
     assert_equal widget.id, response_body["id"]
+    assert_equal 1, response_body["widget_submission_logs"].length
   end
 
   test "should update widget" do

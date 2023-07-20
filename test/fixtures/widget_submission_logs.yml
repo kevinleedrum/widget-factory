@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  widget: one
+  status: ready
+  notes: MyString
+  updated_by: MyString
+  logo_link_url: MyString
+  external_url: MyString
+  external_preview_url: MyString
+  external_expanded_url: MyString

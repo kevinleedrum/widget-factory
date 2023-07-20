@@ -13,10 +13,14 @@ class Widget < ApplicationRecord
   attribute :remove_logo, :boolean
   before_create :set_submitted_at, if: -> { status == "submitted" }
   before_update :set_submitted_at, if: -> { status_changed?(to: "submitted") }
+  before_update :add_submission_log, if: -> { status_changed? }
   after_create :set_external_component
+  after_create :add_submission_log, if: -> { status == "submitted" }
+  after_update :revise_submission_log, if: -> { status == "submitted" && !status_changed? }
   after_save :purge_logo, if: :remove_logo
 
   has_many :user_widgets, dependent: :destroy
+  has_many :widget_submission_logs, dependent: :destroy
 
   scope :activated_widgets, -> {
     where(status: Widget.statuses[:ready], activation_date: ..Time.zone.now)
@@ -72,5 +76,36 @@ class Widget < ApplicationRecord
 
   def purge_logo
     logo.purge_later
+  end
+
+  def add_submission_log
+    # Do not create logs after the widget has been approved
+    return if ["draft", "ready", "deactivated"].include?(status_was)
+    clear_notes if status == "review" # Clear submitter's notes once admin has started reviewing
+    widget_submission_logs.create(
+      status: status,
+      notes: submission_notes,
+      logo_link_url: logo_link_url,
+      external_url: external_url,
+      external_preview_url: external_preview_url,
+      external_expanded_url: external_expanded_url,
+      updated_by: updated_by
+    )
+    clear_notes if status_was == "review" # Clear admin's notes after logging approval/rejection
+  end
+
+  def revise_submission_log
+    widget_submission_logs.last.update(
+      notes: submission_notes,
+      logo_link_url: logo_link_url,
+      external_url: external_url,
+      external_preview_url: external_preview_url,
+      external_expanded_url: external_expanded_url,
+      updated_by: updated_by
+    )
+  end
+
+  def clear_notes
+    self.submission_notes = nil
   end
 end

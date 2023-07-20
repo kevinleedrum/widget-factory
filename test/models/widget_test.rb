@@ -78,4 +78,49 @@ class WidgetTest < ActiveSupport::TestCase
     widget = Widget.create(name: "My Widget")
     assert_equal "external_#{widget.id}", widget.component
   end
+
+  test "submission notes should be cleared when status is changed to review" do
+    widget = Widget.create(name: "My Widget", status: "submitted", submission_notes: "Some notes")
+    assert_equal "Some notes", widget.submission_notes
+    widget.update(status: "review")
+    assert_nil widget.submission_notes
+  end
+
+  test "submission notes should be cleared when status is changed from review" do
+    widget = Widget.create(name: "My Widget", status: "review", submission_notes: "Some notes")
+    assert_equal "Some notes", widget.submission_notes
+    widget.update(status: "rejected")
+    assert_nil widget.submission_notes
+  end
+
+  test "widget submission log should be created when status is changed" do
+    widget = Widget.create(name: "My Widget", status: "unsubmitted")
+    assert_equal 0, widget.widget_submission_logs.count
+    widget.update(status: "submitted")
+    assert_equal 1, widget.widget_submission_logs.count
+  end
+
+  test "widget submission log should be created when status is submitted on create" do
+    widget = Widget.create(name: "My Widget", status: "submitted")
+    assert_equal 1, widget.widget_submission_logs.count
+  end
+
+  test "widget submission log should not be created when status is changed from draft, ready, or deactivated" do
+    widget = Widget.create(name: "My Widget", status: "draft")
+    assert_equal 0, widget.widget_submission_logs.count
+    widget.update(status: "ready")
+    assert_equal 0, widget.widget_submission_logs.count
+    widget.update(status: "deactivated")
+    assert_equal 0, widget.widget_submission_logs.count
+    widget.update(status: "draft")
+    assert_equal 0, widget.widget_submission_logs.count
+  end
+
+  test "widget submission log should be revised if widget is updated while status is submitted" do
+    widget = Widget.create(name: "My Widget", status: "submitted", submission_notes: "Some notes")
+    assert_equal 1, widget.widget_submission_logs.count
+    widget.update(submission_notes: "Updated notes")
+    assert_equal 1, widget.widget_submission_logs.count
+    assert_equal "Updated notes", widget.widget_submission_logs.first.notes
+  end
 end

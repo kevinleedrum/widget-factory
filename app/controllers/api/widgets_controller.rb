@@ -9,8 +9,8 @@ class Api::WidgetsController < ApplicationController
 
   # GET /api/widgets/1
   def show
-    @widget = Widget.find(params[:id])
-    render json: @widget
+    @widget = Widget.includes(:widget_submission_logs).find(params[:id])
+    render json: @widget, include: :widget_submission_logs
   end
 
   # POST /api/widgets
