@@ -17,16 +17,11 @@
 .mds {
   --primary: #430098;
   --secondary: #00bcda;
-  --mds-text-btn-text: var(--primary);
-  --mds-bg-btn-contained: var(--primary);
-  --mds-bg-btn-contained-focus: #602fa1;
-  --mds-bg-btn-contained-hover: var(--primary);
-  --mds-bg-btn-contained-active: var(--primary);
-  --mds-bg-btn-text-focus: #e5def2;
-  --mds-bg-btn-text-hover: #eee8f6;
-  --mds-border-search-focus: var(--primary);
-  --mds-ripple-btn-text: rgba(67, 0, 152, 0.16);
+  --mds-color-primary: var(--primary);
+  --mds-color-primary-dark: var(--primary);
+  --mds-color-primary-hover: #602fa1;
   --mds-text-link: var(--primary);
+  --mds-bg-gray: var(--mds-color-secondary-ultralight);
 }
 body {
   margin: 0;
