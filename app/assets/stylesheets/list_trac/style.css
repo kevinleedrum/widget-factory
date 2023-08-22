@@ -20,7 +20,7 @@
   line-height: 1.25rem;
   letter-spacing: 0.025rem;
   font-weight: 600;
-  border-bottom: 1px solid var(--mds-border-table-header) !important;
+  border-bottom: 1px solid var(--mds-color-secondary-light) !important;
 }
 
 .list_trac td {
@@ -32,11 +32,11 @@
 }
 
 .list_trac tbody > tr:not(:first-child) {
-  border-top: 1px solid var(--mds-border-table-cell) !important;
+  border-top: 1px solid var(--mds-color-secondary-light) !important;
 }
 
 .list_trac tfoot tr {
-  border-top: 1px solid var(--mds-border-table-cell);
+  border-top: 1px solid var(--mds-color-secondary-light);
 }
 
 .list_trac .view-more {

@@ -27,7 +27,7 @@
       <section id="panel-<%= category %>" role="tabpanel" aria-labelledby="tab-<%= category %>" class="<%= i == 0 ? "flex" : "hidden" %> flex-col flex-1 gap-16">
         <% @articles[category].each do |article| %>
           <article>
-            <div class="float-left overflow-hidden rounded-lg mr-8" style="width: 8.75rem; height: 5rem">
+            <div class="float-left overflow-hidden rounded mr-8" style="width: 8.75rem; height: 5rem">
               <img
                 src="<%= article["thumbnailLink"] %>"
                 alt=""
@@ -82,7 +82,7 @@
         <section id="panel-<%= category %>" role="tabpanel" aria-labelledby="tab-<%= category %>" class="<%= i == 0 ? "flex" : "hidden" %> flex-col flex-1 gap-10">
           <% @articles[category].take(2).each do |article| %>
             <article>
-              <div class="float-left overflow-hidden rounded-lg mr-10" style="width: 4.1875rem; height: 3.125rem">
+              <div class="float-left overflow-hidden rounded mr-10" style="width: 4.1875rem; height: 3.125rem">
                 <img
                   src="<%= article["thumbnailLink"] %>"
                   alt=""

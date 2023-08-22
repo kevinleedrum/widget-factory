@@ -36,7 +36,7 @@ window.WidgetFactory.SESSION_ID = '<%= params[:session_id] %>';
     </div>
     <%= image_tag "empty-state.svg", alt: "", role: "presentation", class: "mx-auto", style: "width: 200px;" %>
   </div>
-  <div class="panel-loading absolute inset-0 w-full h-full hidden items-center justify-center bg-gray opacity-50">
+  <div class="panel-loading absolute inset-0 w-full h-full hidden items-center justify-center bg-white opacity-50">
     <mx-circular-progress size="10%"></mx-circular-progress>
   </div>
 </section>
@@ -52,7 +52,7 @@ window.WidgetFactory.SESSION_ID = '<%= params[:session_id] %>';
     <div class="widget-library-grid">
       <% @active_widgets.each do |widget| %>
         <% added = @widgets.include?(widget) %>
-        <div data-widget-id="<%= widget.id %>" data-widget-component="<%= widget.component %>" class="px-16 pt-16 pb-24 bg-white rounded-lg">
+        <div data-widget-id="<%= widget.id %>" data-widget-component="<%= widget.component %>" class="px-16 pt-16 pb-24 bg-white rounded">
           <div class="px-8 mb-20">
             <mx-button btn-type="text" icon="icon icon-plus-circle" class="add-button <%= added ? "hidden" : "" %>">
               <span class="button-text">Add widget</span>
