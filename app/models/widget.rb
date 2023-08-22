@@ -81,7 +81,6 @@ class Widget < ApplicationRecord
   def add_submission_log
     # Do not create logs after the widget has been approved
     return if ["draft", "ready", "deactivated"].include?(status_was)
-    clear_notes if status == "review" # Clear submitter's notes once admin has started reviewing
     widget_submission_logs.create(
       status: status,
       notes: submission_notes,
