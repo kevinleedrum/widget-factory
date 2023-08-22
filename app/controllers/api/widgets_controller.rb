@@ -39,6 +39,17 @@ class Api::WidgetsController < ApplicationController
     end
   end
 
+  # DELETE /api/widgets/1
+  def destroy
+    @widget = Widget.find(params[:id])
+    if ["unsubmitted", "rejected", "submitted"].include?(@widget.status)
+      @widget.destroy
+      head :no_content
+    else
+      render json: { error: "Widget cannot be deleted" }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def decode_logo
@@ -54,6 +65,6 @@ class Api::WidgetsController < ApplicationController
   end
 
   def widget_params
-    params.require(:widget).permit(:name, :description, :status, :activation_date, :remove_logo, :updated_by, :partner, :logo_link_url, :external_url, :external_preview_url, :external_expanded_url, :submitted_by_uuid)
+    params.require(:widget).permit(:name, :description, :status, :activation_date, :remove_logo, :updated_by, :partner, :logo_link_url, :external_url, :external_preview_url, :external_expanded_url, :submitted_by_uuid, :submission_notes)
   end
 end

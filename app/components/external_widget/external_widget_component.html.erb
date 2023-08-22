@@ -1,3 +1,9 @@
-<%= render(InlineWidgetComponent.new(widget: @widget, library_mode: @library_mode)) do %>
-  <iframe src="<%= @iframe_url %>" class="flex-1" style="width: 18.375rem"></iframe>
+<% if current_page?(component_named_expanded_path(@widget[:component])) %>
+  <%= render(ExpandedWidgetComponent.new(widget: @widget)) do %>
+    <iframe src="<%= @expanded_iframe_url %>" class="w-full h-full"></iframe>
+  <% end %>
+<% else %>
+  <%= render(InlineWidgetComponent.new(widget: @widget, expand_url: @expand_url, library_mode: @library_mode)) do %>
+    <iframe src="<%= @iframe_url %>" class="flex-1" style="width: 18.375rem"></iframe>
+  <% end %>
 <% end %>
