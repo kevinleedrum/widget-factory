@@ -3,14 +3,14 @@ env:
   COMPOSE_DOCKER_CLI_BUILD: 1
   BUILDKIT_PROGRESS: plain
 
-  SERVICE: "widget-factory"
-  ECR_URL: "447351447783.dkr.ecr.us-west-2.amazonaws.com"
-  DOCKER_REPOSITORY: "$ECR_URL/$SERVICE"
-  LATEST_DEPLOY_NAME: "qa-latest-deploy"
-  DEPLOY_NAME: "qa-$BUILDKITE_BUILD_NUMBER"
+  SERVICE: 'widget-factory'
+  ECR_URL: '447351447783.dkr.ecr.us-west-2.amazonaws.com'
+  DOCKER_REPOSITORY: '$ECR_URL/$SERVICE'
+  LATEST_DEPLOY_NAME: 'qa-latest-deploy'
+  DEPLOY_NAME: 'qa-$BUILDKITE_BUILD_NUMBER'
 
 steps:
-  - label: ":docker: Docker Build"
+  - label: ':docker: Docker Build'
     plugins:
       ecr#v2.5.0:
         login: true
@@ -19,11 +19,11 @@ steps:
         config: ops/ci/docker-compose.yml
         cli-version: 2
         build: $SERVICE
-        image-repository: "$DOCKER_REPOSITORY"
-        cache-from: "$SERVICE:$DOCKER_REPOSITORY:$LATEST_DEPLOY_NAME"
+        image-repository: '$DOCKER_REPOSITORY'
+        cache-from: '$SERVICE:$DOCKER_REPOSITORY:$LATEST_DEPLOY_NAME'
         push:
-          - "$SERVICE:$DOCKER_REPOSITORY:$LATEST_DEPLOY_NAME"
-          - "$SERVICE:$DOCKER_REPOSITORY:$DEPLOY_NAME"
+          - '$SERVICE:$DOCKER_REPOSITORY:$LATEST_DEPLOY_NAME'
+          - '$SERVICE:$DOCKER_REPOSITORY:$DEPLOY_NAME'
         args:
           - BUILDKIT_INLINE_CACHE=1
     agents:
@@ -34,9 +34,10 @@ steps:
   - label: ':rocket: Deploy to QA'
     trigger: 'deploy-to-eks'
     build:
-      message: ":fork: ${SERVICE} (QA) ${BUILDKITE_MESSAGE}"
-      branch: "master"
+      message: ':fork: ${SERVICE} (QA) ${BUILDKITE_MESSAGE}'
+      branch: 'master'
       env:
         APP: $SERVICE
         ENVIRONMENT: qa
+        FORCE_UPDATE: true
         TAG: ${DEPLOY_NAME}
