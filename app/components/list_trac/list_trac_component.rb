@@ -6,8 +6,8 @@ class ListTrac::ListTracComponent < ApplicationComponent
     return if @error.present?
     @listings = []
     begin
-      @token = token unless @library_mode
-      @listings = @library_mode ? demo_listings : agent_listings
+      @token = token unless @preview_mode.present?
+      @listings = @preview_mode.present? ? demo_listings : agent_listings
       @expand_url = @listings.any? ? component_named_expanded_path(@widget.component, params[:session_id]) : nil
       @listings = @listings.sort_by { |listing| listing[:ViewCount] }.reverse
     rescue => e

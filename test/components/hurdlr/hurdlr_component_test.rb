@@ -28,6 +28,6 @@ class Hurdlr::HurdlrComponentTest < ViewComponent::TestCase
   private
 
   def rendered
-    render_inline(Hurdlr::HurdlrComponent.new(library_mode: true))
+    render_inline(Hurdlr::HurdlrComponent.new(preview_mode: "noninteractive"))
   end
 end

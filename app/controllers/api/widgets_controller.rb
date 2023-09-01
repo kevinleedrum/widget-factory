@@ -46,7 +46,7 @@ class Api::WidgetsController < ApplicationController
       @widget.destroy
       head :no_content
     else
-      render json: { error: "Widget cannot be deleted" }, status: :unprocessable_entity
+      render json: {error: "Widget cannot be deleted"}, status: :unprocessable_entity
     end
   end
 

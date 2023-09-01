@@ -1,6 +1,6 @@
 <%= stylesheet_link_tag "hurdlr/style" %>
 
-<%= render(InlineWidgetComponent.new(widget: @widget, library_mode: @library_mode, error: @error)) do %>
+<%= render(InlineWidgetComponent.new(widget: @widget, preview_mode: @preview_mode, error: @error)) do %>
   <div class="relative flex items-center flex-1 subtitle4 p-16">
     <table
       class="w-full"

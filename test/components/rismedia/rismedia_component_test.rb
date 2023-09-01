@@ -76,7 +76,7 @@ class Rismedia::RismediaComponentTest < ViewComponent::TestCase
   private
 
   def rendered
-    render_inline(Rismedia::RismediaComponent.new(library_mode: true))
+    render_inline(Rismedia::RismediaComponent.new(preview_mode: "noninteractive"))
   end
 
   def with_inline_component

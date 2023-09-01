@@ -1,23 +1,65 @@
-<mx-modal large close-on-escape="false" class="<%= @widget.component %>">
-  <div slot="header-left" class="pr-48"><%= @modal_heading %></div>
-  <div slot="header-right" class="flex items-center space-x-16">
-    <mx-button class="close-button" btn-type="text">Close</mx-button>
+<% unless @preview_mode.present? %>
+  <%# Expanded Modal %>
+  <mx-modal large close-on-escape="false" class="<%= @widget.component %>">
+    <div slot="header-left" class="pr-48"><%= @modal_heading %></div>
+    <div slot="header-right" class="flex items-center space-x-16">
+      <mx-button class="close-button" btn-type="text">Close</mx-button>
+    </div>
+
+    <%= content %>
+
+    <div slot="footer-left">
+      <% if @widget.logo.attached? %>
+        <a href="<%= @widget.logo_link_url %>" target="_blank">
+          <img id="logo" src="<%= @widget.logo_url %>" width="105" height="48" alt="<%= @widget.partner %>" />
+        </a>
+      <% end %>
+    </div>
+  </mx-modal>
+
+  <%= javascript_include_tag "expanded_widget_component" %>
+
+  <script type="module">
+  window.WidgetFactory.SESSION_ID = '<%= params[:session_id] %>';
+  window.WidgetFactory.setUpModal('<%= @widget.component %>');
+  </script>
+
+<% else %>
+  <%# Preview (fake modal) %>
+  <style>
+    html, body {
+      height: 100%;
+    }
+  </style>
+
+  <div class="p-4 h-full">
+    <div class="flex flex-col h-full rounded border bg-white shadow-drop mx-auto" style="max-width: 75rem">
+      <header class="flex items-center h-80 px-40">
+        <div role="heading" aria-level="1" class="text-h2 text-primary">
+          <%= @widget.name %>
+        </div>
+      </header>
+      <div class="flex-1 border-b">
+
+        <%= content %>
+
+      </div>
+      <footer class="flex items-center h-80 px-40">
+        <% if @widget.logo_link_url.present? %>
+          <a href="<%= @widget.logo_link_url %>" target="_blank">
+        <% end %>
+        <img
+          id="logo"
+          class="<%= @widget.logo_url.present? ? "" : "hidden" %>"
+          src="<%= @widget.logo_url %>"
+          width="105"
+          height="48"
+          alt="<%= @widget.partner %>"
+        />
+        <% if @widget.logo_link_url.present? %>
+          </a>
+        <% end %>
+      </div>
+    </div>
   </div>
-
-  <%= content %>
-
-  <div slot="footer-left">
-    <% if @widget.logo.attached? %>
-      <a href="<%= @widget.logo_link_url %>" target="_blank">
-        <img id="logo" src="<%= @widget.logo_url %>" width="105" height="48" alt="<%= @widget.partner %>" />
-      </a>
-    <% end %>
-  </div>
-</mx-modal>
-
-<%= javascript_include_tag "expanded_widget_component" %>
-
-<script type="module">
-window.WidgetFactory.SESSION_ID = '<%= params[:session_id] %>';
-window.WidgetFactory.setUpModal('<%= @widget.component %>');
-</script>
+<% end %>

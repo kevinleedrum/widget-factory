@@ -1,0 +1,26 @@
+<% if params["mode"] == "expanded" %>
+
+  <%# Expanded widget (fake modal) %>
+  <%= render(ExpandedWidgetComponent.new(widget: @widget, preview_mode: "interactive")) do %>
+    <iframe src="<%= @iframe_url %>" class="w-full h-full"></iframe>
+  <% end %>
+
+  <%= javascript_include_tag "dev_widget_preview_component_expanded" %>
+
+<% elsif params["mode"] == "library" %>
+
+  <%# Library tile %>
+  <%= stylesheet_link_tag "widget_panel/style" %>
+  <div class="mx-auto rounded-lg overflow-hidden border shadow-drop" style="width: var(--library-tile-width)">
+    <%= render partial: "component/library_tile", locals: {widget: @widget, widgets: []} %>
+  </div>
+
+<% else %>
+
+  <%# Inline widget %>
+  <div class="mx-auto" style="width: var(--inline-widget-width)">
+    <%= render(InlineWidgetComponent.new(widget: @widget, expand_url: @expand_url, preview_mode: "interactive")) do %>
+      <iframe src="<%= @iframe_url %>" class="flex-1" style="width: var(--inline-widget-iframe-width)"></iframe>
+    <% end %>
+  </div>
+<% end %>

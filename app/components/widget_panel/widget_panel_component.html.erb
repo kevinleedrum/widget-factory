@@ -50,36 +50,7 @@ window.WidgetFactory.SESSION_ID = '<%= params[:session_id] %>';
   <mx-modal large close-on-escape="false">
     <div slot="header-left">Library</div>
     <div class="widget-library-grid">
-      <% @active_widgets.each do |widget| %>
-        <% added = @widgets.include?(widget) %>
-        <div data-widget-id="<%= widget.id %>" data-widget-component="<%= widget.component %>" class="px-16 pt-16 pb-24 bg-white rounded">
-          <div class="px-8 mb-20">
-            <mx-button btn-type="text" icon="icon icon-plus-circle" class="add-button <%= added ? "hidden" : "" %>">
-              <span class="button-text">Add widget</span>
-            </mx-button>
-            <div class="remove-button-wrapper relative <%= added ? "" : "hidden" %>">
-              <!-- It was cleaner to do this with two buttons and CSS instead of JavaScript. -->
-              <!-- Remove button that is hovered/focused/active.  -->
-              <mx-button btn-type="text" icon="icon icon-minus-circle" class="remove-button absolute left-0 opacity-0 hover:opacity-100 focus-within:opacity-100">
-                <span class="button-text">Remove from Dashboard</span>
-              </mx-button>
-              <!-- Not hovered/focused/active -->
-              <mx-button btn-type="text" icon="icon icon-checkbox-circle" class="added-button pointer-events-none" disabled>
-                Added to Dashboard
-              </mx-button>
-            </div>
-          </div>
-          <%= render widget.view_component.new(library_mode: true, widget: widget) %>
-          <div class="px-8 mt-20">
-            <p role="heading" aria-level="3" class="overline2 my-0 mb-8">
-              Description
-            </p>
-            <p class="text-4 my-0">
-              <%= widget.description %>
-            </p>
-          </div>
-        </div>
-      <% end %>
+      <%= render partial: "component/library_tile", collection: @active_widgets, as: :widget, locals: {widgets: @widgets} %>
     </div>
   </mx-modal>
 </div>

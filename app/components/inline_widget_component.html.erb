@@ -1,7 +1,7 @@
 <div
   data-expanded-url="<%= @expand_url %>"
-  class="<%= @widget.component %> <%= "pointer-events-none" if @library_mode %> inline-widget relative flex flex-col border text-primary shadow-drop rounded overflow-hidden m-8"
-  <%= "inert" if @library_mode %>
+  class="<%= @widget.component %> <%= "pointer-events-none" if @preview_mode == "noninteractive" %> inline-widget relative flex flex-col border text-primary shadow-drop rounded overflow-hidden m-8"
+  <%= "inert" if @preview_mode == "noninteractive" %>
 >
   <header class="flex items-center min-h-48 bg-white border-b px-16 select-none">
     <p id="heading" role="heading" aria-level="2" class="my-0 subtitle3">
@@ -15,25 +15,25 @@
     <%= render "component/spinner" %>
   </div>
 
-  <% wrap_logo_with_link = !@library_mode && @widget.logo_link_url.present? %>
-  <% justify_class = @widget.logo_url.present? ? "justify-between" : "justify-end" %>
-  <footer class="flex items-center <%= justify_class %> min-h-48 bg-white border-t px-16">
-    <% if @widget.logo_url.present? %>
+  <% wrap_logo_with_link = @preview_mode != "noninteractive" && @widget.logo_link_url.present? %>
+  <footer class="flex items-center justify-between min-h-48 bg-white border-t px-16">
+    <div class="flex items-center">
       <% if wrap_logo_with_link %>
-        <a href="<%= @widget.logo_link_url %>" target="_blank">
+        <a href="<%= @widget.logo_link_url %>" class="inline-block" target="_blank">
       <% end %>
       <img
         id="logo"
         src="<%= @widget.logo_url %>"
         alt="<%= @widget.partner %>"
+        class="<%= @widget.logo_url.present? ? "" : "hidden" %>"
         style="max-height: 1.875rem;"
       />
       <% if wrap_logo_with_link %>
         </a>
       <% end %>
-    <% end %>
+    </div>
     <div class="actions flex items-center space-x-8">
-      <% unless @library_mode %>
+      <% unless @preview_mode.present? %>
         <% if @expand_url.present? %>
           <button class="expand-button flex items-center cursor-pointer" aria-label="Expand widget">
             <span class="icon icon-grow"></span>

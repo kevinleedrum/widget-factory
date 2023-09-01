@@ -7,9 +7,9 @@ class ExternalWidget::ExternalWidgetComponent < ApplicationComponent
     super
     return if @error.present?
     external_url = @widget.external_url
-    external_url = @widget.external_preview_url if @library_mode && @widget.external_preview_url.present?
+    external_url = @widget.external_preview_url if @preview_mode == "noninteractive" && @widget.external_preview_url.present?
     submission_preview = ["unsubmitted", "review", "rejected"].include?(@widget.status)
-    demo = @library_mode || submission_preview # use demo values for library or submission preview
+    demo = @preview_mode.present? || submission_preview # use demo values for library or submission preview
     @iframe_url = populate_url_variables(external_url, demo)
     if @widget.external_expanded_url.present?
       @expand_url = component_named_expanded_path(@widget.component, params[:session_id])
