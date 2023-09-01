@@ -1,11 +1,11 @@
 class ApplicationComponent < ViewComponent::Base
-  def initialize(widget: nil, library_mode: false)
-    @library_mode = library_mode
+  def initialize(widget: nil, preview_mode: nil)
+    @preview_mode = preview_mode # "interactive", "noninteractive", or nil
     @widget = widget # Set only when widget is rendered inside the widget panel
   end
 
   def before_render
-    @library_mode ||= params[:library_mode]
+    @preview_mode ||= params[:preview_mode]
     @error = nil
     @error_with_api = false
     begin

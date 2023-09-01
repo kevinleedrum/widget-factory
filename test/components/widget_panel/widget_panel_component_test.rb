@@ -146,7 +146,7 @@ class WidgetPanel::WidgetPanelComponentTest < ViewComponent::TestCase
   private
 
   def rendered
-    render_inline(WidgetPanel::WidgetPanelComponent.new(library_mode: true))
+    render_inline(WidgetPanel::WidgetPanelComponent.new(preview_mode: "noninteractive"))
   end
 
   def with_inline_component(components = [])

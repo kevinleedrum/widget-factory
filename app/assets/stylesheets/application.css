@@ -23,6 +23,10 @@
   --mds-text-link: var(--primary);
   --mds-bg-gray: var(--mds-color-secondary-ultralight);
 }
+:root {
+  --inline-widget-width: 19.5rem;
+  --inline-widget-iframe-width: 18.375rem;
+}
 body {
   margin: 0;
   overflow: hidden;

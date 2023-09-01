@@ -43,7 +43,7 @@ class Tips::TipsComponentTest < ViewComponent::TestCase
   private
 
   def rendered
-    render_inline(Tips::TipsComponent.new(library_mode: false))
+    render_inline(Tips::TipsComponent.new)
   end
 
   def my_tip

@@ -1,8 +1,8 @@
 <%= stylesheet_link_tag "tips/style" %>
 
-<%= render(InlineWidgetComponent.new(widget: @widget, library_mode: @library_mode)) do %>
+<%= render(InlineWidgetComponent.new(widget: @widget, preview_mode: @preview_mode)) do %>
   <div class="flex flex-1 py-12 px-16 tip-bg" style="--tip-bg: var(--tip-bg-<%= @bg %>)">
-    <div data-tip-id="<%= @id %>" class="tip-container w-full flex-1 flex flex-col-reverse items-center justify-center p-12 rounded <%= @library_mode ? "pointer-events-none" : "" %>">
+    <div data-tip-id="<%= @id %>" class="tip-container w-full flex-1 flex flex-col-reverse items-center justify-center p-12 rounded <%= @preview_mode.present? ? "pointer-events-none" : "" %>">
       <% if @cta_label.present? %>
         <mx-button btn-type="text" href="<%= @cta_url %>" class="max-w-full" target="_blank">
           <%= @cta_label %>

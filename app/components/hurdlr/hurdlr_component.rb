@@ -4,7 +4,7 @@ class Hurdlr::HurdlrComponent < ApplicationComponent
   def before_render
     super
     return if @error.present?
-    @data = @library_mode ? demo_data : user_vitals
+    @data = @preview_mode.present? ? demo_data : user_vitals
   end
 
   def user_vitals

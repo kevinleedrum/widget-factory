@@ -104,7 +104,7 @@ The component will be viewable at the following URL:
 The `inline_widget` component is not a widget itself but provides common UI and functionality needed to render a widget "inline" (as shown in "My Widgets"). To use this component, your template should resemble the following:
 
 ```erb
-<%= render(InlineWidgetComponent.new(widget: @widget, library_mode: @library_mode, error: @error)) do %>
+<%= render(InlineWidgetComponent.new(widget: @widget, preview_mode: @preview_mode, error: @error)) do %>
   <!-- Your widget's inner HTML goes here -->
 <% end %>
 ```

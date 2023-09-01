@@ -54,8 +54,8 @@ class InlineWidgetComponentTest < ViewComponent::TestCase
     assert_selector expand_button
   end
 
-  def test_component_library_mode
-    render_inline(InlineWidgetComponent.new(widget: @widget, library_mode: true, expand_url: "https://moxiworks.com"))
+  def test_component_preview_mode
+    render_inline(InlineWidgetComponent.new(widget: @widget, preview_mode: "noninteractive", expand_url: "https://moxiworks.com"))
     assert_selector "div.#{@widget[:component]}.pointer-events-none[inert]"
     assert_no_selector "a"
     assert_no_selector "button"

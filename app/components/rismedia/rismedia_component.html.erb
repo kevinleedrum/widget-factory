@@ -58,7 +58,7 @@
 <% else %>
 
   <%# Inline Widget %>
-  <%= render(InlineWidgetComponent.new(widget: @widget, expand_url: @expand_url, library_mode: @library_mode, error: @error)) do %>
+  <%= render(InlineWidgetComponent.new(widget: @widget, expand_url: @expand_url, preview_mode: @preview_mode, error: @error)) do %>
     <div class="flex-1 py-12 px-16 min-w-0 max-w-full bg-white overflow-hidden">
       <nav>
         <div role="tablist" class="flex mb-12 h-24 border-b text-medium-emphasis border-current">

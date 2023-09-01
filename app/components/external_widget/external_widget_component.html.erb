@@ -3,7 +3,7 @@
     <iframe src="<%= @expanded_iframe_url %>" class="w-full h-full"></iframe>
   <% end %>
 <% else %>
-  <%= render(InlineWidgetComponent.new(widget: @widget, expand_url: @expand_url, library_mode: @library_mode)) do %>
-    <iframe src="<%= @iframe_url %>" class="flex-1" style="width: 18.375rem"></iframe>
+  <%= render(InlineWidgetComponent.new(widget: @widget, expand_url: @expand_url, preview_mode: @preview_mode)) do %>
+    <iframe src="<%= @iframe_url %>" class="flex-1" style="width: var(--inline-widget-iframe-width)"></iframe>
   <% end %>
 <% end %>

@@ -44,7 +44,7 @@ class ListTrac::ListTracComponentTest < ViewComponent::TestCase
   private
 
   def rendered
-    render_inline(ListTrac::ListTracComponent.new(library_mode: true))
+    render_inline(ListTrac::ListTracComponent.new(preview_mode: "noninteractive"))
   end
 
   def with_inline_component
