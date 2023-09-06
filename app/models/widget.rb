@@ -34,6 +34,10 @@ class Widget < ApplicationRecord
     super
   end
 
+  def status
+    super || "unsubmitted"
+  end
+
   def activated
     status == Widget.statuses[:ready] && (activation_date.blank? || activation_date <= Time.zone.now)
   end
