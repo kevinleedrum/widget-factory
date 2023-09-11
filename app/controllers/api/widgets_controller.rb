@@ -3,14 +3,19 @@ class Api::WidgetsController < ApplicationController
 
   # GET /api/widgets
   def index
-    @widgets = Widget.all
-    render json: @widgets
+    render json: Widget.parents.includes(:revisions).all.as_json(include: {
+      revisions: {methods: :logo_url}
+    })
   end
 
   # GET /api/widgets/1
   def show
     @widget = Widget.includes(:widget_submission_logs).find(params[:id])
-    render json: @widget, include: :widget_submission_logs
+    render json: @widget, include: {
+      widget_submission_logs: {},
+      revisions: {},
+      parent_widget: {include: :widget_submission_logs, methods: :logo_url}
+    }
   end
 
   # POST /api/widgets
@@ -42,11 +47,33 @@ class Api::WidgetsController < ApplicationController
   # DELETE /api/widgets/1
   def destroy
     @widget = Widget.find(params[:id])
-    if ["unsubmitted", "rejected", "submitted"].include?(@widget.status)
+    if @widget.can_destroy?
       @widget.destroy
       head :no_content
     else
       render json: {error: "Widget cannot be deleted"}, status: :unprocessable_entity
+    end
+  end
+
+  # PATCH /api/widgets/1/revise
+  def revise
+    parent_widget = Widget.find(params[:id])
+    @widget = parent_widget.revisions.first.presence || parent_widget.create_revision
+    if @widget.persisted?
+      render json: @widget, status: :created
+    else
+      render json: @widget.errors, status: :unprocessable_entity
+    end
+  end
+
+  # PATCH /api/widgets/1/merge
+  def merge
+    @widget = Widget.find(params[:id])
+    merged_widget = @widget.merge_into_parent
+    if merged_widget.persisted?
+      render json: merged_widget
+    else
+      render json: merged_widget.errors, status: :unprocessable_entity
     end
   end
 

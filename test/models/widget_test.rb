@@ -86,11 +86,16 @@ class WidgetTest < ActiveSupport::TestCase
     assert_nil widget.submission_notes
   end
 
+  test "widget submission log should be created when widget is drafted" do
+    widget = Widget.create(name: "My Widget", status: "unsubmitted")
+    assert_equal 1, widget.widget_submission_logs.count
+  end
+
   test "widget submission log should be created when status is changed" do
     widget = Widget.create(name: "My Widget", status: "unsubmitted")
-    assert_equal 0, widget.widget_submission_logs.count
-    widget.update(status: "submitted")
     assert_equal 1, widget.widget_submission_logs.count
+    widget.update(status: "submitted")
+    assert_equal 2, widget.widget_submission_logs.count
   end
 
   test "widget submission log should be created when status is submitted on create" do
@@ -115,5 +120,75 @@ class WidgetTest < ActiveSupport::TestCase
     widget.update(submission_notes: "Updated notes")
     assert_equal 1, widget.widget_submission_logs.count
     assert_equal "Updated notes", widget.widget_submission_logs.first.notes
+  end
+
+  test "create_revision should correctly create a new widget revision" do
+    widget = Widget.create(
+      name: "Parent Widget",
+      description: "Parent Description",
+      partner: "Parent Partner",
+      logo_link_url: "https://example.com/parent-logo-link",
+      external_url: "https://example.com/parent-external",
+      external_preview_url: "https://example.com/parent-external-preview",
+      external_expanded_url: "https://example.com/parent-external-expanded",
+      submitted_by_uuid: "parent-submitted-by-uuid"
+    )
+    logo = ActiveStorage::Blob.create_and_upload!(
+      io: File.open(Rails.root.join("test", "fixtures", "files", "logo.png")),
+      filename: "logo.png",
+      content_type: "image/png"
+    )
+    widget.logo.attach(logo)
+    revision = widget.create_revision
+    assert_not_nil revision
+    assert_equal widget.id, revision.parent_widget_id
+    assert_equal "unsubmitted", revision.status
+    assert_equal widget.name, revision.name
+    assert_equal widget.description, revision.description
+    assert_equal widget.partner, revision.partner
+    assert_equal widget.logo_link_url, revision.logo_link_url
+    assert_equal widget.external_url, revision.external_url
+    assert_equal widget.external_preview_url, revision.external_preview_url
+    assert_equal widget.external_expanded_url, revision.external_expanded_url
+    assert_equal widget.submitted_by_uuid, revision.submitted_by_uuid
+    assert revision.logo.attached?
+    assert_equal widget.logo.blob, revision.logo.blob
+  end
+
+  test "merge_into_parent should update the parent with revision attributes" do
+    parent = Widget.create(name: "Parent Widget", description: "Parent Description")
+    revision = parent.create_revision
+    revision.update(
+      name: "Revised Widget",
+      description: "Revised Description",
+      partner: "Revised Partner",
+      logo_link_url: "https://example.com/revised-logo-link",
+      external_url: "https://example.com/revised-external",
+      external_preview_url: "https://example.com/revised-external-preview",
+      external_expanded_url: "https://example.com/revised-external-expanded"
+    )
+    logo = ActiveStorage::Blob.create_and_upload!(
+      io: File.open(Rails.root.join("test", "fixtures", "files", "logo.png")),
+      filename: "logo.png",
+      content_type: "image/png"
+    )
+    revision.logo.attach(logo)
+    merged_widget = revision.merge_into_parent
+    assert_equal "Revised Widget", merged_widget.name
+    assert_equal "Revised Description", merged_widget.description
+    assert_equal "Revised Partner", merged_widget.partner
+    assert_equal "https://example.com/revised-logo-link", merged_widget.logo_link_url
+    assert_equal "https://example.com/revised-external", merged_widget.external_url
+    assert_equal "https://example.com/revised-external-preview", merged_widget.external_preview_url
+    assert_equal "https://example.com/revised-external-expanded", merged_widget.external_expanded_url
+    assert merged_widget.logo.attached?
+    assert_equal revision.logo.blob, merged_widget.logo.blob
+  end
+
+  test "parents scope should return widgets without parent widgets" do
+    parent = Widget.create(name: "Parent Widget")
+    revision = Widget.create(name: "Revised Widget", parent_widget: parent)
+    assert_includes Widget.parents, parent
+    assert_not_includes Widget.parents, revision
   end
 end
