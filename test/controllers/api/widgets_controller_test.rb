@@ -15,6 +15,17 @@ class Api::WidgetsControllerTest < ActionController::TestCase
     response_body = JSON.parse(response.body)
     assert_equal widget.id, response_body["id"]
     assert_equal 1, response_body["widget_submission_logs"].length
+    assert_equal response_body["revisions"].first["id"], widgets(:four).id
+  end
+
+  test "should include parent_widget in single widget" do
+    widget = widgets(:four)
+    get :show, params: {id: widget.id}
+    assert_response :success
+    response_body = JSON.parse(response.body)
+    assert_equal widget.id, response_body["id"]
+    assert_equal widget.parent_widget_id, response_body["parent_widget_id"]
+    assert_equal response_body["parent_widget"]["id"], widgets(:one).id
   end
 
   test "should update widget" do
@@ -72,5 +83,47 @@ class Api::WidgetsControllerTest < ActionController::TestCase
     assert_equal new_properties[:logo_link_url], response_body["logo_link_url"]
     assert_equal "external_#{response_body["id"]}", response_body["component"]
     assert_not_nil response_body["logo_url"]
+  end
+
+  test "should create revision for widget" do
+    widget = widgets(:one)
+    patch :revise, params: {id: widget.id}
+    assert_response :success
+    response_body = JSON.parse(response.body)
+    assert_equal widget.id, response_body["parent_widget_id"]
+  end
+
+  test "should retrieve existing revision instead of creating a revision" do
+    widget = widgets(:one)
+    patch :revise, params: {id: widget.id}
+    assert_response :success
+    response_body = JSON.parse(response.body)
+    assert response_body["id"], widgets(:four).id
+  end
+
+  test "should merge widget into its parent" do
+    widget = widgets(:four)
+    patch :merge, params: {id: widget.id}
+    assert_response :success
+    response_body = JSON.parse(response.body)
+    assert_equal widget.parent_widget_id, response_body["id"]
+    assert_equal widget.name, response_body["name"]
+    assert_equal widget.description, response_body["description"]
+    assert_equal widget.logo_link_url, response_body["logo_link_url"]
+    assert_equal widget.external_url, response_body["external_url"]
+    assert_equal widget.external_preview_url, response_body["external_preview_url"]
+    assert_equal widget.external_expanded_url, response_body["external_expanded_url"]
+  end
+
+  test "should delete widget with deletable status" do
+    widget = widgets(:three)
+    delete :destroy, params: {id: widget.id}
+    assert_response :no_content
+  end
+
+  test "should not delete widget with non-deletable status" do
+    widget = widgets(:one)
+    delete :destroy, params: {id: widget.id}
+    assert_response :unprocessable_entity
   end
 end

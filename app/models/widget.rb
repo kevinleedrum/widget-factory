@@ -15,9 +15,13 @@ class Widget < ApplicationRecord
   before_update :set_submitted_at, if: -> { status_changed?(to: "submitted") }
   before_update :add_submission_log, if: -> { status_changed? }
   after_create :set_external_component
-  after_create :add_submission_log, if: -> { status == "submitted" }
+  after_create :add_submission_log
   after_update :revise_submission_log, if: -> { status == "submitted" && !status_changed? }
   after_save :purge_logo, if: :remove_logo
+
+  belongs_to :parent_widget, class_name: "Widget", optional: true
+  has_many :revisions, class_name: "Widget", foreign_key: "parent_widget_id", dependent: :destroy
+  scope :parents, -> { where(parent_widget_id: nil) }
 
   has_many :user_widgets, dependent: :destroy
   has_many :widget_submission_logs, dependent: :destroy
@@ -40,6 +44,10 @@ class Widget < ApplicationRecord
 
   def activated
     status == Widget.statuses[:ready] && (activation_date.blank? || activation_date <= Time.zone.now)
+  end
+
+  def can_destroy?
+    ["unsubmitted", "rejected", "submitted"].include?(status) || (status == "draft" && parent_widget_id.present?)
   end
 
   def view_component
@@ -66,6 +74,42 @@ class Widget < ApplicationRecord
     )
   end
 
+  def create_revision
+    revision = self.class.new(
+      parent_widget_id: id,
+      status: "unsubmitted",
+      submitted_by_uuid: submitted_by_uuid,
+      name: name,
+      description: description,
+      partner: partner,
+      logo_link_url: logo_link_url,
+      external_url: external_url,
+      external_preview_url: external_preview_url,
+      external_expanded_url: external_expanded_url
+    )
+    revision.logo.attach(logo.blob) if logo.attached?
+    revision.save
+    revision
+  end
+
+  def merge_into_parent
+    parent_widget.update(
+      submitted_by_uuid: submitted_by_uuid,
+      name: name,
+      description: description,
+      partner: partner,
+      logo_link_url: logo_link_url,
+      external_url: external_url,
+      external_preview_url: external_preview_url,
+      external_expanded_url: external_expanded_url
+    )
+    parent_widget.logo.attach(logo.blob) if logo.attached?
+    parent_widget.save
+    widget_submission_logs.update_all(widget_id: parent_widget.id)
+    destroy
+    parent_widget
+  end
+
   private
 
   def set_submitted_at
@@ -85,6 +129,8 @@ class Widget < ApplicationRecord
   def add_submission_log
     # Do not create logs after the widget has been approved
     return if ["draft", "ready", "deactivated"].include?(status_was)
+    # Do not create a log when the widget is rejected and then redrafted
+    return if status == "unsubmitted" && status_was == "rejected"
     widget_submission_logs.create(
       status: status,
       notes: submission_notes,
@@ -94,7 +140,7 @@ class Widget < ApplicationRecord
       external_expanded_url: external_expanded_url,
       updated_by: updated_by
     )
-    clear_notes if status_was == "review" # Clear admin's notes after logging approval/rejection
+    clear_notes if status_changed? && status_was == "review" # Clear admin's notes after logging approval/rejection
   end
 
   def revise_submission_log

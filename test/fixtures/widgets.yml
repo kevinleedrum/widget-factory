@@ -29,3 +29,17 @@ three:
   status: submitted
   activation_date: 2023-01-23 09:04:27
   updated_by: MyString
+
+four:
+  component: widget_four
+  partner: MyString
+  name: Widget Four
+  description: New Description
+  logo_link_url: New Link
+  status: unsubmitted
+  activation_date: 2023-01-23 09:04:27
+  updated_by: MyString
+  parent_widget: one
+  external_url: https://www.example.com
+  external_expanded_url: https://www.example.com
+  external_preview_url: https://www.example.com
