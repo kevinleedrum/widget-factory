@@ -1,1 +1,1 @@
-Rails.application.config.mds_version = "0.10.0"
+Rails.application.config.mds_version = "0.12.0"
