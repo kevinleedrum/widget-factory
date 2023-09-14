@@ -36,9 +36,6 @@ function addCloseHandlers() {
   const modal = document.querySelector('mx-modal');
   modal.addEventListener('mxClose', sendCloseMessage);
 
-  const closeButton = document.querySelector('.close-button');
-  closeButton.addEventListener('click', sendCloseMessage);
-
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') sendCloseMessage();
   });
