@@ -34,6 +34,10 @@ body {
 .inline-widget {
   min-height: 18.5rem; /* 296px */
 }
+.expanded-widget img#logo {
+  max-width: 6.5625rem;
+  max-height: 3rem;
+}
 .icon {
   --svg: ; /* Set in the .icon-* classes */
   display: inline-flex;
