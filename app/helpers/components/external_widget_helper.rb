@@ -1,5 +1,6 @@
 module Components::ExternalWidgetHelper
   def populate_url_variables(url, demo = false)
+    url = "https://#{url}" unless url.start_with?("http")
     return url unless url.include?("{")
     variables = if demo
       demo_values
