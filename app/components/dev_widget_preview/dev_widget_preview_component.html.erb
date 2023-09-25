@@ -15,6 +15,8 @@
     <%= render partial: "component/library_tile", locals: {widget: @widget, widgets: []} %>
   </div>
 
+  <%= javascript_include_tag "dev_widget_preview_component_library" %>
+
 <% else %>
 
   <%# Inline widget %>
