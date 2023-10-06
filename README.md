@@ -165,7 +165,7 @@ Widget.find_by(component: "todo_list").logo.attach(io: File.open(Rails.root.join
 
 ## External Widgets
 
-External widgets are hosted by a third party. The `external_widget` component simply renders the `Widget.external_url` in an iframe.
+External widgets are hosted by a third party. The `external_widget` component simply renders the `Widget.external_url` in an iframe. It may also render the `external_expanded_url` or `external_preview_url` depending on the scenario.
 
 A widget in the `widgets` table is considered "external" if:
 
@@ -180,6 +180,20 @@ The external URL may make use of the following variables:
 
 These variables will be replaced with the user's information when the widget is rendered. For example, if the `external_url` is `https://example.com?name={FULL_NAME}`, and the user's full name is "John Doe", the iframe will render `https://example.com?name=John%20Doe`.
 
+## Widget Statuses
+
+There are quite a few possible values for `Widget.status`, and they do not always match the status text that is shown in the Nucleus Admin or Developer Portal. For example, "Draft" in the Developer Portal is not the same as "Draft" in the Nucleus Admin. Refer to the following table.
+
+| Developer Portal | Database Value  | Nucleus Admin      |
+| ---------------- | --------------- | ------------------ |
+| Draft            | `"unsubmitted"` | _Not shown_        |
+| Submitted        | `"submitted"`   | Needs Review       |
+| In Review        | `"review"`      | Needs Review       |
+| Rejected         | `"rejected"`    | Rejected           |
+| Approved         | `"draft"`       | Draft              |
+| Approved         | `"ready"`       | Active / Scheduled |
+| Approved         | `"deactivated"` | Deactivated        |
+
 ## API Endpoints
 
 As [mentioned previously](#authentication), all API requests should provide a `session_id` query parameter for authentication purposes. This parameter is not required for the `/api/jwt` endpoint.
@@ -190,37 +204,167 @@ Returns an array of all widgets.
 
 ### GET /api/widgets/:id
 
-Returns a single widget. Example response:
+Returns a single widget.
+
+Example response:
 
 ```json
 {
-  "id": 3,
-  "component": "todo_list",
+  "id": 4,
+  "component": "external_4",
   "partner": "Example.com Inc",
   "name": "TODO List",
   "description": "Shows your list of tasks to complete",
   "logo_link_url": "https://example.com/todo-list",
   "status": "ready",
-  "activation_date": "2023-05-01T15:23:22.583Z",
+  "activation_date": "2023-06-01T17:28:52.293Z",
   "updated_by": "John Doe",
   "created_at": "2023-03-24T18:19:00.770Z",
-  "updated_at": "2023-06-01T17:28:52.273Z",
-  "activated": true, // For convenience, indicates the status is "ready" and the activation date has passed
+  "updated_at": "2023-06-01T17:28:52.293Z",
+  "external_url": "https://example.com/todo-list/list?name={FULL_NAME}",
+  "external_preview_url": null,
+  "external_expanded_url": "https://example.com/todo-list/full-list?name={FULL_NAME}",
+  "submitted_at": "2023-03-24T18:19:00.770Z",
+  "submitted_by_uuid": "12345678-1234-1234-1234-123456789012",
+  "submission_notes": null,
+  "parent_widget_id": null,
+  "remove_logo": null,
+  "activated": true,
+  "logo_url": "/rails/active_storage/blobs/redirect/.../logo.png",
+  "widget_submission_logs": [
+    {
+      "id": 158,
+      "widget_id": 4,
+      "status": "submitted",
+      "notes": "Submission notes go here.",
+      "updated_by": null,
+      "logo_link_url": "https://example.com/todo-list",
+      "external_url": "https://example.com/todo-list/list?name={FULL_NAME}",
+      "external_preview_url": "",
+      "external_expanded_url": "https://example.com/todo-list/full-list?name={FULL_NAME}",
+      "created_at": "2023-03-24T18:19:00.770Z",
+      "updated_at": "2023-03-24T18:19:00.770Z"
+    }
+  ],
+  "revisions": [], // If the widget is in the process of being revised, the revised widget will be the only element in this array
+  "parent_widget": null // If the widget is a revision, the parent widget will be returned here
+}
+```
+
+### POST /api/widgets
+
+Creates a new widget.
+
+Example request body:
+
+```json
+{
+  "name": "TODO List",
+  "partner": "Example.com Inc",
+  "description": "Shows your list of tasks to complete",
+  "logo_link_url": "https://example.com/todo-list",
+  "status": "unsubmitted",
+  "external_url": "https://www.example.com",
+  "external_preview_url": "https://www.example.com",
+  "external_expanded_url": "https://www.example.com",
+  "submitted_by_uuid": "12345678-1234-1234-1234-123456789012",
+  "updated_by": "John Doe",
+  "logo_base64": "iVB...g==" // Base64 encoded logo
+}
+```
+
+Example response body:
+
+```json
+{
+  "id": 4,
+  "component": "external_4",
+  "partner": "Example.com Inc",
+  "name": "TODO List",
+  "description": "Shows your list of tasks to complete",
+  "logo_link_url": "https://example.com/todo-list",
+  "status": "unsubmitted",
+  "external_url": "https://www.example.com",
+  "external_preview_url": "https://www.example.com",
+  "external_expanded_url": "https://www.example.com",
+  "submitted_by_uuid": "12345678-1234-1234-1234-123456789012",
+  "activation_date": null,
+  "updated_by": "John Doe",
+  "created_at": "2023-10-06T14:23:47.538Z",
+  "updated_at": "2023-10-06T14:23:47.538Z",
+  "submitted_at": null,
+  "submission_notes": null,
+  "parent_widget_id": null,
+  "remove_logo": null,
+  "activated": false,
   "logo_url": "/rails/active_storage/blobs/redirect/.../logo.png"
 }
 ```
 
 ### PATCH/PUT /api/widgets/:id
 
-Updates a widget. The following parameters are accepted via the request body:
+Updates a widget.
 
-- `name` (string) - The name of the widget (for its heading)
-- `status` (string) - "ready", "draft", or "deactivated"
-- `activation_date` (datetime) - The date the widget should be activated. Activation also requires that the `status` be set to "ready".
-- `description` (string) - The description of the widget for the Widget Library
-- `updated_by` (string) - The name of the user who updated the widget
-- `remove_logo` (boolean) - If true, the widget's logo will be removed
-- `logo_base64` (string) - The base64-encoded image data for the widget's new logo
+Example request body:
+
+```json
+{
+  "name": "My New Widget",
+  "status": "ready",
+  "activation_date": "2023-06-01T17:28:52.293Z", // The date the widget should be activated. Activation also requires that the `status` be set to "ready"
+  "description": "My new widget!",
+  "updated_by": "John Doe",
+  "remove_logo": true, // If true, the widget's logo will be removed
+  "logo_base64": "iVB...g=="
+}
+```
+
+The response will be the updated widget.
+
+### PATCH /api/widgets/:id/revise
+
+Creates a revision for the widget with the specified ID. The revision is a duplicate of the existing widget, but with a different ID, and with the `parent_widget_id` set to the existing widget's ID. If a revision already exists for the widget, the existing revision is returned in order to prevent multiple revisions from being created.
+
+No request body is required.
+
+Example response:
+
+```json
+{
+  "id": 5,
+  "component": "external_5",
+  "parent_widget_id": 4, // The ID of the existing widget
+  "status": "unsubmitted",
+  "partner": "Example.com Inc",
+  "name": "TODO List",
+  "description": "Shows your list of tasks to complete",
+  "logo_link_url": "https://example.com/todo-list",
+  "activation_date": null,
+  "updated_by": null,
+  "created_at": "2023-10-06T14:04:07.976Z",
+  "updated_at": "2023-10-06T14:04:07.998Z",
+  "external_url": "https://example.com/todo-list/list?name={FULL_NAME}",
+  "external_preview_url": null,
+  "external_expanded_url": "https://example.com/todo-list/full-list?name={FULL_NAME}",
+  "submitted_at": null,
+  "submitted_by_uuid": "12345678-1234-1234-1234-123456789012",
+  "submission_notes": null,
+  "remove_logo": null,
+  "activated": false,
+  "logo_url": "/rails/active_storage/blobs/redirect/.../logo.png"
+}
+```
+
+### PATCH /api/widgets/:id/merge
+
+Merges the specified revision into its parent widget. The revision will be deleted during this process. No request body is required. The response will be the merged widget (the `id` will be the original parent widget's ID).
+
+### DELETE /api/widgets/:id
+
+Deletes the widget with the specified ID. A widget may only be deleted in the following cases:
+
+- Its `status` is either "unsubmitted", "rejected", or "submitted".
+- It is an approved revision that has not been merged. In other words, its `status` is "draft" and it has a `parent_widget_id`.
 
 ### PATCH /api/user_widgets
 
