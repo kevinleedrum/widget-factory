@@ -79,11 +79,13 @@ class WidgetTest < ActiveSupport::TestCase
     assert_equal "external_#{widget.id}", widget.component
   end
 
-  test "submission notes should be cleared when status is changed from review" do
-    widget = Widget.create(name: "My Widget", status: "review", submission_notes: "Some notes")
+  test "submission notes and admin response should be cleared when rejecting" do
+    widget = Widget.create(name: "My Widget", status: "review", submission_notes: "Some notes", admin_response: "Some response")
     assert_equal "Some notes", widget.submission_notes
+    assert_equal "Some response", widget.admin_response
     widget.update(status: "rejected")
     assert_nil widget.submission_notes
+    assert_nil widget.admin_response
   end
 
   test "widget submission log should be created when widget is drafted" do

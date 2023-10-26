@@ -92,6 +92,6 @@ class Api::WidgetsController < ApplicationController
   end
 
   def widget_params
-    params.require(:widget).permit(:name, :description, :status, :activation_date, :remove_logo, :updated_by, :partner, :logo_link_url, :external_url, :external_preview_url, :external_expanded_url, :submitted_by_uuid, :submission_notes)
+    params.require(:widget).permit(:name, :description, :status, :activation_date, :remove_logo, :updated_by, :partner, :logo_link_url, :external_url, :external_preview_url, :external_expanded_url, :submitted_by_uuid, :submission_notes, :admin_response)
   end
 end
