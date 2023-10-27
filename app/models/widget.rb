@@ -133,14 +133,14 @@ class Widget < ApplicationRecord
     return if status == "unsubmitted" && status_was == "rejected"
     widget_submission_logs.create(
       status: status,
-      notes: submission_notes,
+      notes: (status_was == "review") ? admin_response : submission_notes,
       logo_link_url: logo_link_url,
       external_url: external_url,
       external_preview_url: external_preview_url,
       external_expanded_url: external_expanded_url,
       updated_by: updated_by
     )
-    clear_notes if status_changed? && status_was == "review" # Clear admin's notes after logging approval/rejection
+    clear_notes if status_changed? && status == "rejected" && status_was == "review" # Clear notes after rejection
   end
 
   def revise_submission_log
@@ -156,5 +156,6 @@ class Widget < ApplicationRecord
 
   def clear_notes
     self.submission_notes = nil
+    self.admin_response = nil
   end
 end
