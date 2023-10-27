@@ -227,6 +227,7 @@ Example response:
   "submitted_at": "2023-03-24T18:19:00.770Z",
   "submitted_by_uuid": "12345678-1234-1234-1234-123456789012",
   "submission_notes": null,
+  "admin_response": null,
   "parent_widget_id": null,
   "remove_logo": null,
   "activated": true,
@@ -294,6 +295,7 @@ Example response body:
   "updated_at": "2023-10-06T14:23:47.538Z",
   "submitted_at": null,
   "submission_notes": null,
+  "admin_response": null,
   "parent_widget_id": null,
   "remove_logo": null,
   "activated": false,
@@ -349,6 +351,7 @@ Example response:
   "submitted_at": null,
   "submitted_by_uuid": "12345678-1234-1234-1234-123456789012",
   "submission_notes": null,
+  "admin_response": null,
   "remove_logo": null,
   "activated": false,
   "logo_url": "/rails/active_storage/blobs/redirect/.../logo.png"
