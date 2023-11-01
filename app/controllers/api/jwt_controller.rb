@@ -1,4 +1,4 @@
-class Api::JwtController < ApplicationController
+class Api::JwtController < ActionController::Base
   skip_before_action :verify_authenticity_token
 
   # POST /api/jwt

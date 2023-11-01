@@ -1,27 +1,30 @@
 class ApplicationController < ActionController::Base
-  before_action :clear_session, unless: -> { request.headers["Authorization"].present? }
-  before_action :jwt_authenticate, :check_valid_session
+  before_action :clear_session_unless_jwt
+  before_action :authenticate_request
 
   private
 
-  # This is simply polling the auth service to make sure there is a valid session.
-  # Other than this, there is no session management in this applicatino.
-  # The assumption is that users need to be logged in to another Moxi entity
-  # which will consime this content.
-  def check_valid_session
-    if params[:session_id]
-
-      auth_response = Resource::Auth.poll(params[:session_id])
-
-      unless auth_response.nil?
-        user_uuid = JSON.parse(auth_response, symbolize_names: true)[:vals][:context_user_uuid]
-        set_user(user_uuid)
-      end
-    end
+  def clear_session_unless_jwt
+    session.clear unless jwt_present?
   end
 
-  def clear_session
-    session.clear
+  def authenticate_request
+    jwt_authenticate if jwt_present?
+    session_id_authenticate unless session[:current_user].present?
+  end
+
+  def jwt_present?
+    request.headers["Authorization"].present?
+  end
+
+  def session_id_authenticate
+    render_unauthorized("A valid session ID or JWT is required") and return if params[:session_id].blank?
+
+    auth_response = Resource::Auth.poll(params[:session_id])
+    render_unauthorized("Invalid session ID") and return if auth_response.nil?
+
+    user_uuid = JSON.parse(auth_response, symbolize_names: true)[:vals][:context_user_uuid]
+    set_user(user_uuid)
   end
 
   def set_user(uuid)
@@ -31,16 +34,14 @@ class ApplicationController < ActionController::Base
   end
 
   def jwt_authenticate
-    return unless request.headers["Authorization"].present?
-    header = request.headers["Authorization"]
-    token = header.split(" ").last if header
-    begin
-      decoded = JsonWebToken.decode(token)
-      set_user(decoded["uuid"])
-    rescue ActiveRecord::RecordNotFound => e
-      render json: {errors: e.message}, status: :unauthorized
-    rescue JWT::DecodeError => e
-      render json: {errors: e.message}, status: :unauthorized
-    end
+    token = request.headers["Authorization"].to_s.split(" ").last
+    decoded = JsonWebToken.decode(token)
+    set_user(decoded["uuid"])
+  rescue ActiveRecord::RecordNotFound, JWT::DecodeError => e
+    render_unauthorized(e.message)
+  end
+
+  def render_unauthorized(message)
+    render json: {errors: message}, status: :unauthorized
   end
 end
