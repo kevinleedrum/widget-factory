@@ -1,8 +1,14 @@
 require "test_helper"
 
-class Api::WidgetsControllerTest < ActionController::TestCase
+class Api::WidgetsControllerTest < ActionDispatch::IntegrationTest
+  include JwtHelper
+
+  def setup
+    @jwt = get_jwt
+  end
+
   test "should get widgets" do
-    get :index
+    get api_widgets_path, headers: {Authorization: @jwt}
     assert_response :success
     response_body = JSON.parse(response.body)
     assert_equal 3, response_body.length
@@ -10,7 +16,7 @@ class Api::WidgetsControllerTest < ActionController::TestCase
 
   test "should get single widget" do
     widget = widgets(:one)
-    get :show, params: {id: widget.id}
+    get api_widget_path(widget[:id]), headers: {Authorization: @jwt}
     assert_response :success
     response_body = JSON.parse(response.body)
     assert_equal widget.id, response_body["id"]
@@ -20,7 +26,7 @@ class Api::WidgetsControllerTest < ActionController::TestCase
 
   test "should include parent_widget in single widget" do
     widget = widgets(:four)
-    get :show, params: {id: widget.id}
+    get api_widget_path(widget[:id]), headers: {Authorization: @jwt}
     assert_response :success
     response_body = JSON.parse(response.body)
     assert_equal widget.id, response_body["id"]
@@ -38,10 +44,7 @@ class Api::WidgetsControllerTest < ActionController::TestCase
       updated_by: "John Doe",
       logo_base64: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
     }
-    put :update, params: {
-      id: widget.id,
-      widget: new_properties
-    }
+    put api_widget_path(widget[:id]), params: {widget: new_properties}, headers: {Authorization: @jwt}
     assert_response :success
     response_body = JSON.parse(response.body)
     assert_equal new_properties[:name], response_body["name"]
@@ -66,9 +69,9 @@ class Api::WidgetsControllerTest < ActionController::TestCase
       logo_link_url: "https://www.example.com",
       logo_base64: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
     }
-    post :create, params: {
+    post api_widgets_path, params: {
       widget: new_properties
-    }
+    }, headers: {Authorization: @jwt}
     assert_response :success
     response_body = JSON.parse(response.body)
     assert_equal new_properties[:name], response_body["name"]
@@ -87,7 +90,7 @@ class Api::WidgetsControllerTest < ActionController::TestCase
 
   test "should create revision for widget" do
     widget = widgets(:one)
-    patch :revise, params: {id: widget.id}
+    patch api_revise_widget_path(widget[:id]), headers: {Authorization: @jwt}
     assert_response :success
     response_body = JSON.parse(response.body)
     assert_equal widget.id, response_body["parent_widget_id"]
@@ -95,7 +98,7 @@ class Api::WidgetsControllerTest < ActionController::TestCase
 
   test "should retrieve existing revision instead of creating a revision" do
     widget = widgets(:one)
-    patch :revise, params: {id: widget.id}
+    patch api_revise_widget_path(widget[:id]), headers: {Authorization: @jwt}
     assert_response :success
     response_body = JSON.parse(response.body)
     assert response_body["id"], widgets(:four).id
@@ -103,7 +106,7 @@ class Api::WidgetsControllerTest < ActionController::TestCase
 
   test "should merge widget into its parent" do
     widget = widgets(:four)
-    patch :merge, params: {id: widget.id}
+    patch api_merge_widget_path(widget[:id]), headers: {Authorization: @jwt}
     assert_response :success
     response_body = JSON.parse(response.body)
     assert_equal widget.parent_widget_id, response_body["id"]
@@ -117,13 +120,13 @@ class Api::WidgetsControllerTest < ActionController::TestCase
 
   test "should delete widget with deletable status" do
     widget = widgets(:three)
-    delete :destroy, params: {id: widget.id}
+    delete api_widget_path(widget[:id]), headers: {Authorization: @jwt}
     assert_response :no_content
   end
 
   test "should not delete widget with non-deletable status" do
     widget = widgets(:one)
-    delete :destroy, params: {id: widget.id}
+    delete api_widget_path(widget[:id]), headers: {Authorization: @jwt}
     assert_response :unprocessable_entity
   end
 end

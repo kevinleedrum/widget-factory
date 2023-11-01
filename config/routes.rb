@@ -17,8 +17,8 @@ Rails.application.routes.draw do
 
   namespace :api do
     resources :widgets
-    patch "widgets/:id/revise" => "widgets#revise"
-    patch "widgets/:id/merge" => "widgets#merge"
+    patch "widgets/:id/revise" => "widgets#revise", :as => :revise_widget
+    patch "widgets/:id/merge" => "widgets#merge", :as => :merge_widget
     post "events" => "events#create"
     patch "user_widgets", to: "user_widgets#update_order"
     delete "user_widgets/:id", to: "user_widgets#destroy", as: :destroy_user_widget
