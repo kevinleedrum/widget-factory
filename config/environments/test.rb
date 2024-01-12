@@ -59,4 +59,8 @@ Rails.application.configure do
   # config.action_view.annotate_rendered_view_with_filenames = true
 
   config.base_service = ENV["svc_base"] || "https://svc-devint.moxiworks.com"
+  config.nucleus_base = ENV["nucleus_base"] || "https://nucleus-devint.moxiworks.com"
+  config.secret_key = ENV.fetch("SECURE_REQUEST_SALT") do
+    YAML.load_file(Rails.root.join("config", "secreq.yml"))[Rails.env]["salt"]
+  end
 end

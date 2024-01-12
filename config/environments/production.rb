@@ -95,4 +95,8 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   config.base_service = ENV["svc_base"] || "https://svc.moxiworks.com"
+  config.nucleus_base = ENV["nucleus_base"] || "https://central.stellarmls.com"
+  config.secret_key = ENV.fetch("SECURE_REQUEST_SALT") do
+    YAML.load_file(Rails.root.join("config", "secreq.yml"))[Rails.env]["salt"]
+  end
 end

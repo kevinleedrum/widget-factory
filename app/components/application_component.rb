@@ -5,6 +5,7 @@ class ApplicationComponent < ViewComponent::Base
   end
 
   def before_render
+    set_nucleus_api_client
     @preview_mode ||= params[:preview_mode]
     @error = nil
     @error_with_api = false
@@ -29,5 +30,9 @@ class ApplicationComponent < ViewComponent::Base
     )
   rescue
     nil
+  end
+
+  def set_nucleus_api_client
+    @nucleus_api_client = NucleusApiClient.new
   end
 end

@@ -13,6 +13,11 @@ module Components::ExternalWidgetHelper
     url
   end
 
+  def sign_url(url, token)
+    url += "&timestamp=#{Time.now.utc.to_i}"
+    "#{url}&signature=#{OpenSSL::HMAC.hexdigest("sha256", token, url)}"
+  end
+
   private
 
   def session_values

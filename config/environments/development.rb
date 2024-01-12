@@ -69,4 +69,8 @@ Rails.application.configure do
   # config.action_cable.disable_request_forgery_protection = true
 
   config.base_service = "https://svc-devint.moxiworks.com"
+  config.nucleus_base = ENV["nucleus_base"] || "http://0.0.0.0:3000"
+  config.secret_key = ENV.fetch("SECURE_REQUEST_SALT") do
+    YAML.load_file(Rails.root.join("config", "secreq.yml"))[Rails.env]["salt"]
+  end
 end

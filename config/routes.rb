@@ -24,6 +24,7 @@ Rails.application.routes.draw do
     delete "user_widgets/:id", to: "user_widgets#destroy", as: :destroy_user_widget
     post "user_widgets/:id/restore", to: "user_widgets#restore", as: :restore_user_widget
     post "jwt" => "jwt#index"
+    post "tokens/clear/:uuid" => "tokens#clear"
   end
 
   root "welcome#index"

@@ -1,12 +1,10 @@
 class JsonWebToken
-  SECRET_KEY = ENV.fetch("SECURE_REQUEST_SALT") { YAML.load_file(Rails.root.join("config", "secreq.yml"))[Rails.env]["salt"] }
-
   def self.encode(payload)
-    JWT.encode(payload, SECRET_KEY)
+    JWT.encode(payload, Rails.application.config.secret_key)
   end
 
   def self.decode(token)
-    decoded = JWT.decode(token, SECRET_KEY)[0]
+    decoded = JWT.decode(token, Rails.application.config.secret_key)[0]
     HashWithIndifferentAccess.new decoded
   end
 end
