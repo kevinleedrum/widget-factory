@@ -1,0 +1,37 @@
+# .rubocop.yml
+
+inherit_mode:
+  merge:
+    - Exclude
+
+require:
+  - rubocop-performance
+  - standard/cop/block_single_line_braces
+  - ./lib/rubocop/cop/lint_env
+
+inherit_gem:
+  standard: config/base.yml
+
+inherit_from:
+  - .rubocop_rails.yml
+  - .rubocop_strict.yml
+
+AllCops:
+  TargetRubyVersion: 3.0
+  TargetRailsVersion: 7.0
+
+Lint/Env:
+  Enabled: true
+  Include:
+    - '**/*.rb'
+  Exclude:
+    - '**/config/initializers/backtrace_silencers.rb'
+    - '**/config/environments/**/*'
+    - '**/config/application.rb'
+    - '**/config/environment.rb'
+    - '**/config/puma.rb'
+    - '**/config/boot.rb'
+    - '**/spec/*_helper.rb'
+    - '**/test/*_helper.rb'
+    - '**/spec/**/support/**/*'
+    - 'lib/generators/**/*'
